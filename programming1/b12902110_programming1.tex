@@ -1,0 +1,61 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{enumitem}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xeCJK}
+
+\renewcommand\arraystretch{1.1}
+\setCJKmainfont[AutoFakeBold=1.5]{新細明體}
+
+\title{
+  \vspace{-1cm}
+  Systems Programming (2024 Fall)\\
+  Programming Assignment 1
+}
+\author{\Large B12902110 呂承諺}
+\date{}
+
+\begin{document}
+  \maketitle
+  \begin{enumerate}
+    \item
+    \begin{enumerate}
+      \item Busy waiting means a process is repeatedly testing if a condition
+      has become true. In this assignment, that is testing if data is available
+      to be read.
+
+      \item In this assignment, we can avoid busy waiting by using
+      \verb|select()| or \verb|poll()| with a properly configured timeout.
+      This way, the server only continues execution when there is data is ready
+      to be read.
+
+      \item It is still possible to have busy waiting even with \verb|select()|
+      or \verb|poll()|, if the timeout is set to 0.
+    \end{enumerate}
+
+    \item
+    \begin{enumerate}
+      \item Starvation refers to an I/O request not getting data, resulting in
+      an indefinite wait.
+      \item In this assignment, it is possible for a request to encounter
+      starvation if our code handles a request using infinite loops.
+      To avoid this, we use a state-based approach, keeping track of every
+      request's state and changing its state accordingly after each command.
+      This way, we only have to handle commands when input data is available,
+      thus preventing indefinite waits.
+    \end{enumerate}
+
+    \item Since a process could never test for its own lock via \verb|fcntl()|,
+    we need to keep track of which seats are reserved or paid by which requests
+    handled by this server process. This can be done by creating an array of
+    seat statuses for each shift, maintaining the request's ID that has reserved
+    or paid for the shift.
+
+    \item We use advisory record locking provided by \verb|fcntl()|.
+    Before writing a byte range (a seat is essentially a byte) in a shift's record
+    file, we first need to check is another process is holding a lock to that
+    byte range. If that is true, we have to ensure that our process will not write to
+    that byte range.
+
+  \end{enumerate}
+\end{document}
