@@ -1,0 +1,45 @@
+ \documentclass[12pt, a4paper]{article}
+\usepackage{enumitem}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{xeCJK}
+
+\renewcommand\arraystretch{1.1}
+\setCJKmainfont[AutoFakeBold=1.5]{新細明體}
+
+\setminted{
+  fontsize=\footnotesize,
+  frame=single,
+}
+
+\title{
+  \vspace{-1cm}
+  Systems Programming (2024 Fall)\\
+  Handwritten Assignment 2
+}
+\author{\Large B12902110 呂承諺}
+\date{}
+
+\begin{document}
+  \maketitle
+  \begin{enumerate}
+    \item If we use \verb|stat()| instead of \verb|lstat()| and one of the arguments is
+    a symbolic link, it would output information about the file that the link points to.
+
+    \item If the file mode creation mask is \verb|777|, then the created file would have
+    permission \verb|000|.
+
+    \item We would get a segmentation fault.
+    \inputminted[label=\footnotesize3\_vfork.c]{c}{3_vfork.c}
+    \begin{Verbatim}[fontsize=\footnotesize, frame=single]
+$ gcc 3_vfork.c && ./a.out
+Child pid = 1002226
+Parent after vfork
+[1]    1002225 segmentation fault (core dumped)  ./a.out
+    \end{Verbatim}
+
+    \item Because \verb|unlink()| modifies the inode by decrementing the link count (\verb|stat.st_nlink|),
+    therefore the ctime (changed status time) will be modified.
+  \end{enumerate}
+\end{document}
