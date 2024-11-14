@@ -1,0 +1,27 @@
+digraph G {
+  dpi=192
+
+  subgraph internal {
+    node [style=dashed]
+    rank = same
+    LevelPrint
+    Search
+    AdoptPrint
+    CompareMod
+  }
+
+  subgraph public {
+    Meet
+    Check
+    Graduate
+    Adopt
+    Compare
+  }
+
+  LevelPrint -> Check
+  edge [style=dashed]
+  Check -> Graduate
+  edge [style=""]
+  {Meet Search AdoptPrint Graduate} -> Adopt
+  {CompareMod Graduate} -> Compare
+}
