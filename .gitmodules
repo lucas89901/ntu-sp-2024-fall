@@ -7,3 +7,6 @@
 [submodule "sp2024-hw2"]
 	path = sp2024-hw2
 	url = ../sp2024-hw2.git
+[submodule "sp2024-hw3"]
+	path = sp2024-hw3
+	url = ../sp2024-hw3.git
