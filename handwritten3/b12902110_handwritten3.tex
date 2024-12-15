@@ -1,0 +1,55 @@
+ \documentclass[12pt, a4paper]{article}
+\usepackage{enumitem}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{xeCJK}
+
+\renewcommand\arraystretch{1.1}
+\setCJKmainfont[AutoFakeBold=1.5]{新細明體}
+
+\setminted{
+  fontsize=\footnotesize,
+  frame=single,
+}
+
+\title{
+  \vspace{-1cm}
+  Systems Programming (2024 Fall)\\
+  Handwritten Assignment 3
+}
+\author{\Large B12902110 呂承諺}
+\date{}
+
+\begin{document}
+  \maketitle
+  \begin{enumerate}
+    \item We still use \verb|fork| if we want to spawn a child process that
+    eventually calls \verb|exec| and runs a different executable.
+    Otherwise, the parent process itself would be replaced.
+
+    Moreover, if we want the new process to have its own address space (e.g.,
+    heap, data, bss) and file descriptors, we would use \verb|fork()|.
+
+    \item If a \verb|SIGALRM| is sent to the program from outside before
+    \verb|setjmp(env_alrm)| is called, then \verb|env_alrm| would be undefined.
+
+    Also, it's better to use \verb|sigsetjmp()| and \verb|siglongjmp()|,
+    otherwise \verb|SIGALRM| may remain blocked after \verb|longjmp()| from
+    \verb|sig_alrm()| back to \verb|main()|.
+
+    \item
+    \begin{enumerate}[label=(\Alph*)]
+      \item \verb|pthread_cond_wait(&q->not_full, &q->mutex)|
+      \item \verb|pthread_cond_singal(&q->not_empty)|
+      \item \verb|pthread_cond_wait(&q->not_empty, &q->mutex)|
+      \item \verb|pthread_cond_singal(&q->not_full)|
+    \end{enumerate}
+
+    We need the checks otherwise a deadlock would happen.
+    Both functions would wait for the other's signal before signaling.
+
+    \item Just like the example in the textbook.
+    \inputminted{c}{4_ipc.c}
+  \end{enumerate}
+\end{document}
