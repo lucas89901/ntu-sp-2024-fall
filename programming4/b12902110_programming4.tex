@@ -1,0 +1,95 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\usepackage{xeCJK}
+
+\pgfplotsset{compat=1.18}
+
+\renewcommand\arraystretch{1.1}
+\setCJKmainfont[AutoFakeBold=1.5]{新細明體}
+
+\title{%
+  \vspace{-1.5cm}
+  Systems Programming (2024 Fall)\\
+  Programming Assignment 4
+}
+\author{\Large B12902110 呂承諺}
+\date{}
+
+\begin{document}
+  \maketitle
+  \begin{enumerate}
+    \item The following are 3 cases with different $n$'s and $t$'s.
+    For every request, \verb|num_works| is set to be equal to $n$, that is, every row is processed by a thread.
+
+    \pgfplotsset{
+      xlabel=Number of threads,
+      ylabel=Running time (s),
+    }
+    \begin{tikzpicture}
+      \begin{axis}[
+        title={$n=2, t=10000$},
+        scale=0.9
+      ]
+        \addplot table [header=false] {n2_t10000_result.txt};
+      \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+      \begin{axis}[
+        title={$n=100, t=1000$},
+        scale=0.9
+      ]
+        \addplot table [header=false] {n100_t1000_result.txt};
+      \end{axis}
+    \end{tikzpicture}
+
+    \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        title={$n=2000, t=10$},
+        width=\linewidth,
+        height=6cm
+      ]
+        \addplot table [header=false] {n2000_t10_result.txt};
+      \end{axis}
+    \end{tikzpicture}
+    \end{center}
+
+
+    The first two cases doesn't show a significant trend. We suspect the
+    frontend thread is the bottleneck.
+    There are too many requests for he frontend thread to handle, but there is
+    only one frontend thread.
+
+    From the last case, we can see that running time decreases significantly
+    when the number of threads increases from 1 to around 10, but remains
+    roughly the same when the number of threads ranges from 10 to 100.
+    The speedup disappears after 10 threads because there is bottleneck
+    introduced by context switching.
+
+    \pagebreak
+    \item Synchronization is handled by checking the following
+    three conditions:
+    \begin{itemize}
+      \item The frontend queue is empty.
+      \item The worker queue is empty.
+      \item There are no threads currently performing a job.
+    \end{itemize}
+    If all three conditions are fulfilled, then all threads are
+    synchronized.
+
+    The last condition is maintained by variable \verb|running_count|,
+    representing the number of threads that has popped a request or work
+    from the queue but is still processing it. This variable is
+    protected by a mutex (\verb|running_mutex|).
+
+    When a thread has finished its job, it signals the condition
+    variable \verb|done|, which is waited by \verb|tpool_synchronize()|
+    in a while loop the check for the three conditions above.
+    This way, \verb|tpool_synchronize()| will not busy wait.
+  \end{enumerate}
+\end{document}
